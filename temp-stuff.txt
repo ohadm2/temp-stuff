@@ -1,0 +1,1 @@
+https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https://github.com/forseti-security/terraform-google-forseti.git&cloudshell_git_branch=modulerelease522&cloudshell_working_dir=examples/install_simple&cloudshell_image=gcr.io/graphite-cloud-shell-images/terraform:latest&cloudshell_tutorial=./tutorial.md
