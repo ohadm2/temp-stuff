@@ -5,9 +5,9 @@ metadata:
   description: Simple PHP app running in Docker
   annotations:
     github.com/project-slug: your-org/my-php-app
+    backstage.io/github-actions-repository: your-org/my-php-app
 spec:
   type: service
   lifecycle: development
   owner: php-team
   system: php-services
-
