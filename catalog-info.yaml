@@ -4,6 +4,7 @@ metadata:
   name: my-php-app
   description: Simple PHP app running in Docker
   annotations:
+    backstage.io/techdocs-ref: value
     github.com/project-slug: your-org/my-php-app
     backstage.io/github-actions-repository: your-org/my-php-app
 spec:
