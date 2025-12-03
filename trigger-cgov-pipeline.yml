@@ -1,0 +1,159 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: trigger-gitlab-pipeline
+  title: Trigger GitLab Pipeline
+  description: Collect user inputs and trigger a GitLab pipeline with the provided parameters
+  tags:
+    - gitlab
+    - pipeline
+spec:
+  owner: platform-team
+  type: service
+
+  parameters:
+    - title: Basic Information
+      required:
+        - name
+        - owner_email
+        - created_by
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Resource name
+          pattern: '^[a-z0-9-]+$'
+          ui:autofocus: true
+          ui:help: 'Use lowercase letters, numbers, and hyphens only'
+        
+        office_number:
+          title: Office Number
+          type: string
+          description: Office number or location identifier
+          pattern: '^[A-Z0-9-]+$'
+          ui:help: 'Example: NYC-01, LON-42'
+        
+        department:
+          title: Department
+          type: string
+          description: Department name
+          enum:
+            - Engineering
+            - Product
+            - Marketing
+            - Sales
+            - Finance
+            - Operations
+            - HR
+            - IT
+        
+        purchase_order_number:
+          title: Purchase Order Number
+          type: string
+          description: PO number for billing and tracking
+          pattern: '^PO-[0-9]{6,}$'
+          ui:help: 'Format: PO-123456'
+
+    - title: Owner & Team Information
+      required:
+        - owner_role
+        - owner_email
+        - team_name
+        - team_email
+      properties:
+        owner_role:
+          title: Owner Role
+          type: string
+          description: Role of the owner
+          enum:
+            - Tech Lead
+            - Engineering Manager
+            - Product Manager
+            - Team Lead
+            - Director
+            - VP
+        
+        owner_email:
+          title: Owner Email
+          type: string
+          description: Email address of the owner
+          format: email
+          ui:help: 'This person will be responsible for this resource'
+        
+        team_name:
+          title: Team Name
+          type: string
+          description: Name of the team
+          pattern: '^[a-zA-Z0-9-_ ]+$'
+          ui:help: 'Example: Platform Engineering, Data Analytics'
+        
+        team_email:
+          title: Team Email
+          type: string
+          description: Team distribution list email
+          format: email
+          ui:help: 'Team mailing list for notifications'
+
+    - title: Environment & Metadata
+      required:
+        - environment
+        - created_by
+      properties:
+        environment:
+          title: Environment
+          type: string
+          description: Target environment
+          enum:
+            - dev
+            - staging
+            - production
+            - qa
+            - sandbox
+          enumNames:
+            - Development
+            - Staging
+            - Production
+            - QA
+            - Sandbox
+          default: dev
+        
+        created_by:
+          title: Created By
+          type: string
+          description: Your email or username
+          format: email
+          ui:help: 'This will be recorded as the creator'
+        
+        finops_tag:
+          title: FinOps Tag
+          type: string
+          description: Financial operations tag for cost allocation
+          pattern: '^[a-z0-9-]+$'
+          ui:help: 'Used for cost tracking and billing. Example: project-alpha, team-backend'
+
+  steps:
+    - id: trigger-gitlab-pipeline
+      name: Trigger GitLab Pipeline
+      action: http:backstage:request
+      input:
+        method: POST
+        url: 'https://gitlab.com/api/v4/projects/<PROJECT_ID>/trigger/pipeline'
+        headers:
+          'Content-Type': 'application/x-www-form-urlencoded'
+        body: 'token=${{ secrets.GITLAB_TRIGGER_TOKEN }}&ref=main&variables[NAME]=${{ parameters.name }}&variables[OFFICE_NUMBER]=${{ parameters.office_number }}&variables[DEPARTMENT]=${{ parameters.department }}&variables[PURCHASE_ORDER_NUMBER]=${{ parameters.purchase_order_number }}&variables[OWNER_ROLE]=${{ parameters.owner_role }}&variables[OWNER_EMAIL]=${{ parameters.owner_email }}&variables[TEAM_NAME]=${{ parameters.team_name }}&variables[TEAM_EMAIL]=${{ parameters.team_email }}&variables[ENVIRONMENT]=${{ parameters.environment }}&variables[CREATED_BY]=${{ parameters.created_by }}&variables[FINOPS_TAG]=${{ parameters.finops_tag }}'
+
+  output:
+    links:
+      - title: Pipeline URL
+        url: ${{ steps['trigger-gitlab-pipeline'].output.pipelineUrl }}
+      - title: GitLab Project
+        url: 'https://gitlab.com/your-group/your-project'  # Update with your GitLab URL
+    text:
+      - title: Pipeline Triggered
+        content: |
+          Successfully triggered GitLab pipeline with the following parameters:
+          - Name: ${{ parameters.name }}
+          - Environment: ${{ parameters.environment }}
+          - Team: ${{ parameters.team_name }}
+          - Owner: ${{ parameters.owner_email }}
+          - FinOps Tag: ${{ parameters.finops_tag }}
