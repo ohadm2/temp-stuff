@@ -10,4 +10,5 @@ spec:
     displayName: test user
     email: test.user@example.com
     picture: https://www.gravatar.com/avatar/test.user@example.com?d=identicon
-
+  memberOf:
+    [viewers]
