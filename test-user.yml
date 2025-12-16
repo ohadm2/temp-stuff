@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: test-user
+  namespace: default
+  title: test user
+  description: test user
+spec:
+  profile:
+    displayName: test user
+    email: test.user@example.com
+    picture: https://www.gravatar.com/avatar/test.user@example.com?d=identicon
+
